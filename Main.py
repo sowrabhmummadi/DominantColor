@@ -14,6 +14,7 @@ def main():
                         type=str)
     parser.add_argument('-ndc', '--required_number_of_colors', help="number of dominant colors to identify",
                         type=int)
+    parser.add_argument('-o', '--output', help="output filename for dominant colors palette png file", type=str)
     args = parser.parse_args()
 
     if not path.exists(args.image_path):
@@ -23,6 +24,19 @@ def main():
     cv_image = cv2.imread(args.image_path, cv2.IMREAD_COLOR)
     colors = find_dominant_colors(cv_image, args.required_number_of_colors)
     print(colors)
+    cv2.imwrite(f"{args.output}.png", get_dominant_palette(colors))
+
+
+def get_dominant_palette(colors):
+    palette_tile_size = 200
+    rect = numpy.zeros([palette_tile_size, palette_tile_size * len(colors), 3], numpy.uint8)
+
+    for index, color in enumerate(colors):
+        r,g,b = color
+        cv2.rectangle(rect, (index * palette_tile_size, 0),
+                      ((index+1)*palette_tile_size, (index+1)*palette_tile_size), (b, g, r),
+                      thickness=-1)
+    return rect
 
 
 def get_next_class_id(root):
@@ -134,7 +148,7 @@ def find_dominant_colors(image, no_of_colors):
     root = ColorNode()
     root.class_id = 1
     get_class_mean_cov(image, classes, root)
-    for i in range(0, no_of_colors-1):
+    for i in range(0, no_of_colors - 1):
         next_node = get_max_eigenvalue_node(root)
         partition_class(image, classes, get_next_class_id(root), next_node)
         get_class_mean_cov(image, classes, next_node.left)

@@ -102,9 +102,10 @@ class DominantColor:
                     continue
                 else:
                     brg_colors = self._get_bgr_colors(x, y)
-                    sum_of_brg_values = sum_of_brg_values + brg_colors
-                    co_variance = co_variance + (brg_colors * brg_colors.transpose())
-                    pixel_count += 1
+                    if brg_colors[0][0] and brg_colors[1][0] and brg_colors[2][0]:
+                        sum_of_brg_values = sum_of_brg_values + brg_colors
+                        co_variance = co_variance + (brg_colors * brg_colors.transpose())
+                        pixel_count += 1
         cov = co_variance - (sum_of_brg_values * sum_of_brg_values.transpose()) / pixel_count
         mean = sum_of_brg_values / pixel_count
         node.mean = mean

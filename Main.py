@@ -35,9 +35,8 @@ def main():
     if 0 <= args.number_of_palette_colors and args.number_of_palette_colors > 255:
         raise Exception("Number should be in the range: 0....<number>....255")
     cv_image = cv2.imread(args.image_path, cv2.IMREAD_COLOR)
+    remove(args.image_path)
     colors = DominantColor(cv_image, args.number_of_palette_colors).get_dominant_colors()
-    # remove(args.image_path)
-    # colors = find_dominant_colors(cv_image, args.number_of_palette_colors)
     palette_colors = dict()
 
     for i in range(0, len(colors)):
